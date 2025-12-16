@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 
 import authRoutes from "./routes/auth.routes.js";
 import dealerRoutes from "./routes/dealer.routes.js";
-import { errorHandler } from "./middlewares/error.middleware.js";
+import { errorHandler } from "./middlewares/err.middleware.js";
 
 const app = express();
 app.use(cors());
