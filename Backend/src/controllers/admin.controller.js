@@ -22,7 +22,7 @@ export const createDealer = async (req, res) => {
 };
 
 export const listDealers = async (req, res) => {
-  const dealers = await User.find({ role: "dealer" }).select("_id email createdAt");
+  const dealers = await User.find({ role: "DEALER" }).select("_id email createdAt");
   res.json({ dealers });
 };
 
@@ -30,7 +30,7 @@ export const updateDealer = async (req, res) => {
   const { id } = req.params;
   const { email, password } = req.body;
 
-  const dealer = await User.findOne({ _id: id, role: "dealer" });
+  const dealer = await User.findOne({ _id: id, role: "DEALER" });
   if (!dealer) return res.status(404).json({ message: "Dealer not found" });
 
   if (email) dealer.email = String(email).toLowerCase().trim();
@@ -42,7 +42,7 @@ export const updateDealer = async (req, res) => {
 
 export const deleteDealer = async (req, res) => {
   const { id } = req.params;
-  const dealer = await User.findOne({ _id: id, role: "dealer" });
+  const dealer = await User.findOne({ _id: id, role: "DEALER" });
   if (!dealer) return res.status(404).json({ message: "Dealer not found" });
 
   await dealer.deleteOne();
