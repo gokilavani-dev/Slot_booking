@@ -25,28 +25,28 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../../Public/login.html"));
 });
 
-// ===== ONE-TIME ADMIN CREATION =====
-app.get("/__create-admin", async (req, res) => {
-  try {
-    const exists = await User.findOne({ role: "admin" });
-    if (exists) {
-      return res.status(200).json({ message: "Admin already exists" });
-    }
+// // ===== ONE-TIME ADMIN CREATION =====
+// app.get("/__create-admin", async (req, res) => {
+//   try {
+//     const exists = await User.findOne({ role: "admin" });
+//     if (exists) {
+//       return res.status(200).json({ message: "Admin already exists" });
+//     }
 
-    const hash = await bcrypt.hash("Admin@123", 10);
+//     const hash = await bcrypt.hash("Admin@123", 10);
 
-    await User.create({
-      email: "admin@bookyours.com",
-      password: hash,
-      role: "ADMIN",
-    });
+//     await User.create({
+//       email: "admin@bookyours.com",
+//       password: hash,
+//       role: "ADMIN",
+//     });
 
-    res.status(201).json({ message: "Admin created successfully" });
-  } catch (err) {
-    console.error("Create admin error:", err);
-    res.status(500).json({ error: err.message });
-  }
-});
+//     res.status(201).json({ message: "Admin created successfully" });
+//   } catch (err) {
+//     console.error("Create admin error:", err);
+//     res.status(500).json({ error: err.message });
+//   }
+// });
 
 // ===== ROUTES =====
 app.use("/auth", authRoutes);
