@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Slotting Time</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+  <style>
+    h1{
+        text-align: center;
+        color: indigo;
+        margin-top: 30p;
+    }
+  </style>
+</head>
+
+
+<body class="bg-gray-100 font-[Inter] min-h-screen flex items-center justify-center">
+
+  <div class="bg-white w-full max-w-md rounded-xl shadow-lg p-8">
+    
+    <h1 class="text-2xl font-semibold text-blue-800 mb-2 color-indigo-600">
+      ABHINAV AGENCY SLOT BOOKING
+    </h1>
+
+    <p class="text-sm text-gray-500 mb-6">
+      Enter eligible amount to continue
+    </p>
+
+    <label class="block text-sm text-gray-600 mb-2">
+      Amount
+    </label>
+
+    <input 
+      id="amountInput"
+      type="number"
+      placeholder="Enter your amount"
+      class="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    />
+
+    <p class="text-xs text-gray-400 mt-2">
+      * Eligibility rules apply
+    </p>
+
+    <button 
+      id="continueBtn"
+      class="mt-6 w-full bg-indigo-600 text-white py-3 rounded-lg font-medium hover:bg-indigo-700 transition">
+      Continue
+    </button>
+
+  </div>
+<script>
+  document.getElementById("continueBtn").addEventListener("click", () => {
+    const amount = Number(document.getElementById("amountInput").value);
+
+    if (!amount) {
+      alert("Please enter amount");
+      return;
+    }
+
+    // ✅ CORRECT RULE
+    if (amount >= 80000) {
+      localStorage.setItem("amount", amount);
+      window.location.href = "date_slot.html";
+    } else {
+      alert("Amount must be ₹80,000 or above to continue");
+    }
+  });
+</script>
+</body>
+</html>

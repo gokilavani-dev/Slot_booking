@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Select Date & Slot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 font-[Inter] min-h-screen flex items-center justify-center">
+
+  <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg p-8">
+
+    <h1 class="text-2xl font-semibold text-blue-800 mb-2">
+      Select Date & Time Slot
+    </h1>
+
+    <p class="text-sm text-gray-500 mb-6">
+      Choose your preferred date and available slot
+    </p>
+
+    <!-- Date -->
+    <label class="block text-sm text-gray-600 mb-2">Booking Date</label>
+    <input
+      id="dateInput"
+      type="date"
+      class="w-full border rounded-lg px-4 py-3 mb-6 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    />
+
+    <!-- Slots -->
+    <h2 class="text-lg font-medium text-blue-800 mb-4">Available Slots</h2>
+
+    <div class="grid grid-cols-2 gap-4">
+
+      <button class="slot-btn border rounded-lg py-4" data-slot="8:30 am" data-status="available">
+        <p class="font-medium">8:30</p>
+        <p class="text-green-600 text-sm">Available</p>
+      </button>
+
+      <button class="slot-btn border rounded-lg py-4"data-slot="12:30 am" data-status="available">
+        <p class="font-medium">12:30</p>
+        <p class="text-green-600 text-sm">Available</p>
+      </button>
+
+      <button class="slot-btn border rounded-lg py-4" data-slot="4:30 am" data-status="available">
+        <p class="font-medium">4:30</p>
+        <p class="text-green-600 text-sm">Available</p>
+      </button>
+
+      <button class="slot-btn border rounded-lg py-4" data-slot="8:30 am" data-status="available">
+        <p class="font-medium">8:30</p>
+        <p class="text-green-600 text-sm">Available</p>
+      </button>
+
+    </div>
+
+    <button
+      id="continueBtn"
+      class="mt-8 w-full bg-indigo-600 text-white py-3 rounded-lg font-medium hover:bg-indigo-700 transition">
+      Continue
+    </button>
+
+  </div>
+
+<script>
+  let selectedSlot = null;
+
+  document.querySelectorAll(".slot-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.status === "booked") return;
+
+      document.querySelectorAll(".slot-btn").forEach(b =>
+        b.classList.remove("ring-2", "ring-indigo-500")
+      );
+
+      btn.classList.add("ring-2", "ring-indigo-500");
+      selectedSlot = btn.dataset.slot;
+    });
+  });
+
+  document.getElementById("continueBtn").addEventListener("click", () => {
+    const date = document.getElementById("dateInput").value;
+
+    if (!date || !selectedSlot) {
+      alert("Please select date and slot");
+      return;
+    }
+
+    localStorage.setItem("date", date);
+    localStorage.setItem("slot", selectedSlot);
+
+    window.location.href = "summary.html";
+  });
+</script>
+
+</body>
+</html>
