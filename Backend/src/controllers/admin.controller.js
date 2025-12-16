@@ -15,7 +15,7 @@ export const createDealer = async (req, res) => {
   const dealer = await User.create({
     email: String(email).toLowerCase().trim(),
     password: hash,
-    role: "dealer"
+    role: "DEALER"
   });
 
   res.status(201).json({ message: "Dealer created", dealer: { id: dealer._id, email: dealer.email } });
