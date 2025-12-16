@@ -12,6 +12,7 @@ import User from "./models/User.js";
 const app = express();
 
 app.use(cors());
+
 app.use(express.json());
 
 // ===== FRONTEND SERVE =====
@@ -37,7 +38,7 @@ app.get("/__create-admin", async (req, res) => {
     await User.create({
       email: "admin@bookyours.com",
       password: hash,
-      role: "admin",
+      role: "ADMIN",
     });
 
     res.status(201).json({ message: "Admin created successfully" });
