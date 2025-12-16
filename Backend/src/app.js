@@ -7,7 +7,7 @@ import bcrypt from "bcrypt";
 import authRoutes from "./routes/auth.routes.js";
 import dealerRoutes from "./routes/dealer.routes.js";
 import { errorHandler } from "./middlewares/err.middleware.js";
-import User from "./models/User.model.js";
+import User from "./models/User.js";
 
 const app = express();
 
