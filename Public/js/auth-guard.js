@@ -6,7 +6,7 @@ function requireLogin() {
 function requireAdmin() {
   requireLogin();
   const role = localStorage.getItem("role");
-  if (role !== "admin") window.location.href = "/amount.html";
+  if (role !== "ADMIN") window.location.href = "/amount.html";
 }
 
 function logout() {
