@@ -14,8 +14,10 @@ app.use(express.json());
 // frontend serve
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use(express.static(path.join(__dirname, "../../public")));
-
+app.use(express.static(path.join(__dirname, "../../Public")));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../Public/login.html"));
+});
 app.use("/auth", authRoutes);
 app.use("/dealer", dealerRoutes);
 
