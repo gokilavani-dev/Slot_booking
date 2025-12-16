@@ -1,6 +1,10 @@
 import { Router } from "express";
-import { requireAuth } from "../middlewares/auth.middleware.js";
-import { dealerBook } from "../controllers/dealer.controller.js";
+import { auth } from "../middlewares/auth.middleware.js";
+import { createBooking, myBookings } from "../controllers/dealer.controller.js";
 
-export default Router()
-  .post("/book-slot", requireAuth, dealerBook);
+const router = Router();
+
+router.post("/book", auth, createBooking);
+router.get("/bookings", auth, myBookings);
+
+export default router;

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - Merge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+  <script src="js/api.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script>requireAdmin();</script>
+
+  <div class="max-w-5xl mx-auto">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-xl font-semibold text-blue-800">Merge Waiting Bookings</h1>
+      <a href="/admin.html" class="text-indigo-600">Back</a>
+    </div>
+
+    <div class="bg-white rounded shadow p-4 mb-4">
+      <button id="initVehicles" class="bg-gray-800 text-white px-3 py-2 rounded">Init 4 Vehicles (once)</button>
+      <select id="vehicle" class="border p-2 rounded ml-2"></select>
+    </div>
+
+    <div class="bg-white rounded shadow p-4">
+      <p class="text-sm text-gray-600 mb-3">Select 2+ waiting bookings with SAME date & slot, then Merge.</p>
+      <div id="list" class="space-y-2"></div>
+
+      <button id="mergeBtn" class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded">
+        Merge & Confirm
+      </button>
+    </div>
+  </div>
+
+  <script src="js/admin-merge.js"></script>
+</body>
+</html>

@@ -4,8 +4,10 @@ dotenv.config();
 import app from "./app.js";
 import { connectDB } from "./config/db.js";
 
-connectDB();
+const PORT = process.env.PORT || 3000;
 
-app.listen(process.env.PORT, () =>
-  console.log("Server running on", process.env.PORT)
-);
+await connectDB();
+
+app.listen(PORT, () => {
+  console.log(`Server running on ${PORT}`);
+});

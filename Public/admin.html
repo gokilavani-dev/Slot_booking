@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+  <script src="js/api.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script>requireAdmin();</script>
+
+  <div class="max-w-5xl mx-auto">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-semibold text-blue-800">Admin Dashboard</h1>
+      <button onclick="logout()" class="px-4 py-2 bg-gray-800 text-white rounded">Logout</button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <a href="/admin_dealers.html" class="bg-white p-5 rounded shadow">Dealers (Create/Edit/Delete)</a>
+      <a href="/admin_waiting.html" class="bg-white p-5 rounded shadow">Waiting List</a>
+      <a href="/admin_merge.html" class="bg-white p-5 rounded shadow">Merge Bookings</a>
+    </div>
+  </div>
+</body>
+</html>
