@@ -14,5 +14,12 @@ export const loginService = async (email, password) => {
     process.env.JWT_SECRET
   );
 
-  return { token, role: user.role };
+  return {
+    token,
+    user: {
+      id: user._id,
+      email: user.email,
+      role: user.role
+    }
+  };
 };
