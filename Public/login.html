@@ -77,14 +77,18 @@
         });
 
         localStorage.setItem("token", res.token);
-        localStorage.setItem("role", res.role);
+        localStorage.setItem("role", res.user.role);
 
-        // Dealer flow
-        window.location.href = "amount.html";
+        if (res.user.role === "ADMIN") {
+          window.location.href = "admin.html";
+        } else {
+          window.location.href = "amount.html";
+        }
       } catch (e) {
         alert(e.message || "Login failed");
       }
     });
+
   </script>
 
 </body>
