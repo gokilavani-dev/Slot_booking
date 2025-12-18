@@ -1,14 +1,26 @@
 import bcrypt from "bcrypt";
 import User from "../models/user.model.js";
 import Booking from "../models/booking.model.js";
+import WaitingBooking from "../models/waiting.model.js";
 import Vehicle from "../models/vehicle.model.js";
+
+/* =====================================================
+   DEALER MANAGEMENT
+===================================================== */
 
 export const createDealer = async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ message: "email & password required" });
 
-  const exists = await User.findOne({ email: String(email).toLowerCase().trim() });
-  if (exists) return res.status(400).json({ message: "User already exists" });
+  if (!email || !password) {
+    return res.status(400).json({ message: "email & password required" });
+  }
+
+  const exists = await User.findOne({
+    email: String(email).toLowerCase().trim()
+  });
+  if (exists) {
+    return res.status(400).json({ message: "User already exists" });
+  }
 
   const hash = await bcrypt.hash(password, 10);
 
@@ -18,11 +30,15 @@ export const createDealer = async (req, res) => {
     role: "DEALER"
   });
 
-  res.status(201).json({ message: "Dealer created", dealer: { id: dealer._id, email: dealer.email } });
+  res.status(201).json({
+    message: "Dealer created",
+    dealer: { id: dealer._id, email: dealer.email }
+  });
 };
 
 export const listDealers = async (req, res) => {
-  const dealers = await User.find({ role: "DEALER" }).select("_id email createdAt");
+  const dealers = await User.find({ role: "DEALER" })
+    .select("_id email createdAt");
   res.json({ dealers });
 };
 
@@ -31,10 +47,16 @@ export const updateDealer = async (req, res) => {
   const { email, password } = req.body;
 
   const dealer = await User.findOne({ _id: id, role: "DEALER" });
-  if (!dealer) return res.status(404).json({ message: "Dealer not found" });
+  if (!dealer) {
+    return res.status(404).json({ message: "Dealer not found" });
+  }
 
-  if (email) dealer.email = String(email).toLowerCase().trim();
-  if (password) dealer.password = await bcrypt.hash(password, 10);
+  if (email) {
+    dealer.email = String(email).toLowerCase().trim();
+  }
+  if (password) {
+    dealer.password = await bcrypt.hash(password, 10);
+  }
 
   await dealer.save();
   res.json({ message: "Dealer updated" });
@@ -42,30 +64,51 @@ export const updateDealer = async (req, res) => {
 
 export const deleteDealer = async (req, res) => {
   const { id } = req.params;
+
   const dealer = await User.findOne({ _id: id, role: "DEALER" });
-  if (!dealer) return res.status(404).json({ message: "Dealer not found" });
+  if (!dealer) {
+    return res.status(404).json({ message: "Dealer not found" });
+  }
 
   await dealer.deleteOne();
   res.json({ message: "Dealer deleted" });
 };
 
+/* =====================================================
+   BOOKINGS (CONFIRMED ONLY)
+===================================================== */
+
 export const listAllBookings = async (req, res) => {
-  const bookings = await Booking.find().sort({ createdAt: -1 }).populate("dealerId", "email role");
+  const bookings = await Booking.find()
+    .sort({ createdAt: -1 })
+    .populate("dealerId", "email role")
+    .populate("vehicleId", "name");
+
   res.json({ bookings });
 };
 
+/* =====================================================
+   WAITING LIST (SEPARATE COLLECTION)
+===================================================== */
+
 export const waitingList = async (req, res) => {
-  const bookings = await Booking.find({ status: "waiting", merged: false })
+  const waiting = await WaitingBooking.find({ merged: false })
     .sort({ createdAt: 1 })
     .populate("dealerId", "email");
-  res.json({ bookings });
+
+  res.json({ waiting });
 };
+
+/* =====================================================
+   VEHICLE MANAGEMENT
+===================================================== */
 
 export const createVehiclesIfEmpty = async (req, res) => {
   const count = await Vehicle.countDocuments();
-  if (count > 0) return res.json({ message: "Vehicles already exist" });
+  if (count > 0) {
+    return res.json({ message: "Vehicles already exist" });
+  }
 
-  // 4 vehicles default
   await Vehicle.insertMany([
     { name: "Vehicle 1", tripsPerDay: 4 },
     { name: "Vehicle 2", tripsPerDay: 4 },
@@ -77,65 +120,89 @@ export const createVehiclesIfEmpty = async (req, res) => {
 };
 
 export const listVehicles = async (req, res) => {
-  const vehicles = await Vehicle.find().select("_id name tripsPerDay");
+  const vehicles = await Vehicle.find()
+    .select("_id name tripsPerDay");
+
   res.json({ vehicles });
 };
 
-/**
- * Merge waiting bookings:
- * - same date + slot
- * - selected bookingIds (>=2)
- * - combined amount >= 100000 => create one CONFIRMED booking
- * - mark originals: merged=true, mergedInto=newBookingId
- * - assign vehicleId required (admin permission)
- */
+/* =====================================================
+   MERGE WAITING → CONFIRMED (ADMIN POWER)
+===================================================== */
+
 export const mergeBookings = async (req, res) => {
-  const { bookingIds, vehicleId } = req.body;
-  if (!Array.isArray(bookingIds) || bookingIds.length < 2) {
-    return res.status(400).json({ message: "Select at least 2 bookings" });
-  }
-  if (!vehicleId) return res.status(400).json({ message: "vehicleId required" });
+  const { waitingIds, vehicleId } = req.body;
 
-  const bookings = await Booking.find({ _id: { $in: bookingIds } }).populate("dealerId", "email");
-  if (bookings.length !== bookingIds.length) return res.status(400).json({ message: "Some bookings not found" });
-
-  // validate waiting + not merged
-  for (const b of bookings) {
-    if (b.status !== "waiting" || b.merged) {
-      return res.status(400).json({ message: "Only unmerged waiting bookings can be merged" });
-    }
+  if (!Array.isArray(waitingIds) || waitingIds.length < 2) {
+    return res.status(400).json({
+      message: "Select at least 2 waiting bookings"
+    });
   }
 
-  const date = bookings[0].date;
-  const slot = bookings[0].slot;
-  const same = bookings.every(b => b.date === date && b.slot === slot);
-  if (!same) return res.status(400).json({ message: "All selected bookings must be same date & slot" });
+  if (!vehicleId) {
+    return res.status(400).json({
+      message: "vehicleId required"
+    });
+  }
 
-  const total = bookings.reduce((s, b) => s + b.amount, 0);
+  const waitings = await WaitingBooking.find({
+    _id: { $in: waitingIds },
+    merged: false
+  }).populate("dealerId", "email");
+
+  if (waitings.length !== waitingIds.length) {
+    return res.status(400).json({
+      message: "Invalid or already merged waiting bookings"
+    });
+  }
+
+  // same date + slot validation
+  const date = waitings[0].date;
+  const slot = waitings[0].slot;
+
+  const same = waitings.every(
+    w => w.date === date && w.slot === slot
+  );
+
+  if (!same) {
+    return res.status(400).json({
+      message: "All waiting bookings must have same date & slot"
+    });
+  }
+
+  const total = waitings.reduce((sum, w) => sum + w.amount, 0);
+
   if (total < 100000) {
-    return res.status(400).json({ message: "Combined amount must be >= 100000 to confirm" });
+    return res.status(400).json({
+      message: "Combined amount must be at least ₹1,00,000"
+    });
   }
 
-  // create merged confirmed booking (dealerId = first dealer for reference)
-  const mergedBooking = await Booking.create({
-    dealerId: bookings[0].dealerId._id,
+  // ✅ create CONFIRMED booking
+  const booking = await Booking.create({
+    dealerId: waitings[0].dealerId._id, // reference dealer
     date,
     slot,
     amount: total,
-    status: "confirmed",
     vehicleId,
+    status: "CONFIRMED",
     createdByAdmin: true
   });
 
-  // mark originals merged
-  await Booking.updateMany(
-    { _id: { $in: bookingIds } },
-    { $set: { merged: true, mergedInto: mergedBooking._id } }
+  // ✅ mark waiting bookings as merged
+  await WaitingBooking.updateMany(
+    { _id: { $in: waitingIds } },
+    {
+      $set: {
+        merged: true,
+        mergedInto: booking._id
+      }
+    }
   );
 
   res.json({
-    message: "Merged and confirmed",
-    mergedBookingId: mergedBooking._id,
+    message: "Merged and confirmed successfully",
+    bookingId: booking._id,
     totalAmount: total
   });
 };

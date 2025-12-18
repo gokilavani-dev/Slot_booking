@@ -7,7 +7,7 @@ const bookingSchema = new mongoose.Schema(
     slot: { type: String, required: true },              // "8-12" | "12-4" | "4-8"
     amount: { type: Number, required: true },
 
-    status: { type: String, enum: ["WAITING", "CONFIRMED"], required: true },
+    status: { type: String, enum: ["CONFIRMED"],  default: "CONFIRMED" },
     merged: { type: Boolean, default: false },
     mergedInto: { type: mongoose.Schema.Types.ObjectId, ref: "Booking", default: null },
 

@@ -86,12 +86,11 @@
           })
         });
 
-        // optional handling
         if (res.status === "WAITING") {
-          alert("Your order is added to waiting list");
+            window.location.href = "waiting.html";
+        } else {
+          window.location.href = "success.html";
         }
-
-        window.location.href = "success.html";
       } catch (e) {
         alert(e.message || "Booking failed");
       }
