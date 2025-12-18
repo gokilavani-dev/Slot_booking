@@ -1,9 +1,14 @@
 async function loadWaiting() {
-  const { bookings } = await api("/admin/waiting");
+  const { waiting } = await api("/admin/waiting");
   const el = document.getElementById("waiting");
   el.innerHTML = "";
 
-  bookings.forEach(b => {
+  if (!Array.isArray(waiting) || waiting.length === 0) {
+    el.innerHTML = "<div class='text-gray-500'>No waiting bookings</div>";
+    return;
+  }
+
+  waiting.forEach(b => {
     const row = document.createElement("div");
     row.className = "border rounded p-3 flex items-center justify-between";
     row.innerHTML = `
