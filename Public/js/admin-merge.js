@@ -37,3 +37,31 @@ async function loadWaiting() {
     list.appendChild(row);
   });
 }
+
+
+document.getElementById("initVehicles").addEventListener("click", async () => {
+  await api("/admin/vehicles/init", { method: "POST" });
+  await loadVehicles();
+  alert("Vehicles ready");
+});
+
+document.getElementById("mergeBtn").addEventListener("click", async () => {
+  const checked = [...document.querySelectorAll("#list input[type=checkbox]:checked")].map(x => x.value);
+  const vehicleId = document.getElementById("vehicle").value;
+
+  try {
+    const res = await api("/admin/merge", {
+      method: "POST",
+      body: JSON.stringify({ bookingIds: checked, vehicleId })
+    });
+    alert(`Merged ✅ Total ₹${res.totalAmount}`);
+    await loadWaiting();
+  } catch (e) {
+    alert(e.message);
+  }
+});
+
+(async () => {
+  await loadVehicles().catch(() => {});
+  await loadWaiting();
+})(); 
