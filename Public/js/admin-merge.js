@@ -1,23 +1,14 @@
-let waiting = [];
-
-async function loadVehicles() {
-  const { vehicles } = await api("/admin/vehicles");
-  const sel = document.getElementById("vehicle");
-  sel.innerHTML = "";
-  vehicles.forEach(v => {
-    const opt = document.createElement("option");
-    opt.value = v._id;
-    opt.textContent = v.name;
-    sel.appendChild(opt);
-  });
-}
-
 async function loadWaiting() {
   const res = await api("/admin/waiting");
-  waiting = res.bookings;
+  waiting = res.waiting;   // ✅ FIX
 
   const list = document.getElementById("list");
   list.innerHTML = "";
+
+  if (!Array.isArray(waiting) || waiting.length === 0) {
+    list.innerHTML = "<div class='text-gray-500'>No waiting bookings</div>";
+    return;
+  }
 
   waiting.forEach(b => {
     const row = document.createElement("label");
@@ -32,30 +23,3 @@ async function loadWaiting() {
     list.appendChild(row);
   });
 }
-
-document.getElementById("initVehicles").addEventListener("click", async () => {
-  await api("/admin/vehicles/init", { method: "POST" });
-  await loadVehicles();
-  alert("Vehicles ready");
-});
-
-document.getElementById("mergeBtn").addEventListener("click", async () => {
-  const checked = [...document.querySelectorAll("#list input[type=checkbox]:checked")].map(x => x.value);
-  const vehicleId = document.getElementById("vehicle").value;
-
-  try {
-    const res = await api("/admin/merge", {
-      method: "POST",
-      body: JSON.stringify({ bookingIds: checked, vehicleId })
-    });
-    alert(`Merged ✅ Total ₹${res.totalAmount}`);
-    await loadWaiting();
-  } catch (e) {
-    alert(e.message);
-  }
-});
-
-(async () => {
-  await loadVehicles().catch(() => {});
-  await loadWaiting();
-})();
