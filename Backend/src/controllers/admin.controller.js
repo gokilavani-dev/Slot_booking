@@ -81,8 +81,14 @@ export const deleteDealer = async (req, res) => {
 export const listAllBookings = async (req, res) => {
   const bookings = await Booking.find()
     .sort({ createdAt: -1 })
-    .populate("dealerId", "email role")
-    .populate("vehicleId", "name");
+    .populate("dealerId", "email")
+    .populate({
+      path: "mergedFrom",
+      populate: {
+        path: "dealerId",
+        select: "email"
+      }
+    });
 
   res.json({ bookings });
 };
