@@ -47,3 +47,11 @@ export const createBooking = async (req, res) => {
     waiting
   });
 };
+export const myBookings = async (req, res) => {
+  const dealerId = req.user.userId;
+
+  const bookings = await Booking.find({ dealerId })
+    .sort({ createdAt: -1 });
+
+  res.json({ bookings });
+};
