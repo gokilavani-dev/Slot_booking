@@ -161,12 +161,12 @@ export const mergeBookings = async (req, res) => {
   const slot = waitings[0].slot;
 
   const same = waitings.every(
-    w => w.date === date && w.slot === slot
+    w => w.date === date
   );
 
   if (!same) {
     return res.status(400).json({
-      message: "All waiting bookings must have same date & slot"
+      message: "All waiting bookings must have same date"
     });
   }
 
