@@ -186,7 +186,8 @@ export const mergeBookings = async (req, res) => {
     amount: total,
     vehicleId,
     status: "CONFIRMED",
-    createdByAdmin: true
+    createdByAdmin: true,
+    mergedFrom: waitingIds
   });
 
   // ✅ mark waiting bookings as merged
