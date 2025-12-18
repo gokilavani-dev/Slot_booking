@@ -52,7 +52,7 @@ document.getElementById("mergeBtn").addEventListener("click", async () => {
   try {
     const res = await api("/admin/merge", {
       method: "POST",
-      body: JSON.stringify({ WaitingIds: checked, vehicleId })
+      body: JSON.stringify({ waitingIds: checked, vehicleId })
     });
     alert(`Merged ✅ Total ₹${res.totalAmount}`);
     await loadWaiting();
