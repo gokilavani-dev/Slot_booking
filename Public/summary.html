@@ -77,10 +77,12 @@
         const amount = Number(localStorage.getItem("amount"));
 
         // 🔥 REAL BACKEND CALL
-        const res = await api("/dealer/book-slot", {
+        const res = await api("/dealer/book", {
           method: "POST",
           body: JSON.stringify({
-            orderValue: amount
+            date: localStorage.getItem("date"),
+            slot: localStorage.getItem("slot"),
+            amount: Number(localStorage.getItem("amount"))
           })
         });
 
