@@ -1,3 +1,17 @@
+let waiting = [];
+
+async function loadVehicles() {
+  const { vehicles } = await api("/admin/vehicles");
+  const sel = document.getElementById("vehicle");
+  sel.innerHTML = "";
+  vehicles.forEach(v => {
+    const opt = document.createElement("option");
+    opt.value = v._id;
+    opt.textContent = v.name;
+    sel.appendChild(opt);
+  });
+}
+
 async function loadWaiting() {
   const res = await api("/admin/waiting");
   waiting = res.waiting;   // ✅ FIX
